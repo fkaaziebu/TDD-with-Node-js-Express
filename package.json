@@ -14,6 +14,7 @@
     "bcrypt": "^5.1.0",
     "config": "^3.3.9",
     "express": "^4.18.2",
+    "express-validator": "^6.15.0",
     "sequelize": "^6.29.3",
     "sqlite3": "^5.1.6"
   },
@@ -45,7 +46,8 @@
     },
     "rules": {
       "eqeqeq": "warn",
-      "prettier/prettier": "warn"
+      "prettier/prettier": "warn",
+      "no-unused-vars": "warn"
     }
   },
   "prettier": {

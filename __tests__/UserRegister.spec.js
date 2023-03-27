@@ -2,14 +2,42 @@ const request = require("supertest");
 const app = require("../src/app");
 const User = require("../src/user/User");
 const sequelize = require("../src/config/database");
-const nodemailerStub = require("nodemailer-stub");
+const { describe } = require("../src/user/User");
+const SMTPServer = require("smtp-server").SMTPServer;
 
-beforeAll(() => {
-  return sequelize.sync();
+let lastMail, server;
+let simulateSmtpFailure = false;
+beforeAll(async () => {
+  server = new SMTPServer({
+    authOptional: true,
+    onData(stream, session, callback) {
+      let mailBody;
+      stream.on("data", (data) => {
+        mailBody += data.toString();
+      });
+      stream.on("end", () => {
+        if (simulateSmtpFailure) {
+          const err = new Error("Invalid mailbox");
+          err.responseCode = 553;
+          return callback(err);
+        }
+        lastMail = mailBody;
+        callback();
+      });
+    },
+  });
+  await server.listen(8587, "localhost");
+
+  await sequelize.sync();
 });
 
 beforeEach(() => {
+  simulateSmtpFailure = false;
   return User.destroy({ truncate: true });
+});
+
+afterAll(async () => {
+  await server.close();
 });
 
 const validUser = {
@@ -174,14 +202,33 @@ describe("User Registration", () => {
 
   it("sends an Account activation email with activationToken", async () => {
     await postUser();
-    const lastMail = nodemailerStub.interactsWithMail.lastMail();
-    expect(lastMail.to[0]).toContain("user1@mail.com");
     const users = await User.findAll();
     const savedUser = users[0];
-    expect(lastMail.content).toContain(savedUser.activationToken);
+    expect(lastMail).toContain("user1@mail.com");
+    expect(lastMail).toContain(savedUser.activationToken);
+  });
+
+  it("returns 502 Bad Gateway when sending email fails", async () => {
+    simulateSmtpFailure = true;
+    const response = await postUser();
+    expect(response.status).toBe(502);
+  });
+
+  it("returns Email failure message when sending mail fails", async () => {
+    simulateSmtpFailure = true;
+    const response = await postUser();
+    expect(response.body.message).toBe("Email Failure");
+  });
+
+  it("does not save user to database if activation email fails", async () => {
+    simulateSmtpFailure = true;
+    await postUser();
+    const users = await User.findAll();
+    expect(users.length).toBe(0);
   });
 });
 
+// INTERNATIONALIZATION PART
 describe("Internationalization", () => {
   const username_null = "Kullanıcı adı boş olamaz";
   const username_size = "En az 4 en fazla 32 karakter olmalıdır";
@@ -193,6 +240,7 @@ describe("Internationalization", () => {
     "Şifre en az 1 küçük harf ve 1 rakamdan oluşmalıdır.";
   const email_inuse = "E-posta kullanımda";
   const user_create_success = "Kullanıcı oluşturuldu";
+  const email_failure = "E-posta Hatası";
 
   it.each`
     field         | value              | expectedMessage
@@ -235,5 +283,25 @@ describe("Internationalization", () => {
   it(`returns success message of ${user_create_success} when signup request is valid and language is set as turkish`, async () => {
     const response = await postUser({ ...validUser }, { language: "tr" });
     expect(response.body.message).toBe(user_create_success);
+  });
+
+  it(`returns ${email_failure} message when sending mail fails and language is set as turkish`, async () => {
+    simulateSmtpFailure = true;
+    const response = await postUser({ ...validUser }, { language: "tr" });
+    expect(response.body.message).toBe(email_failure);
+  });
+});
+
+describe("Account activation", () => {
+  it("activates the account when correct otken is sent", async () => {
+    await postUser();
+    let users = await User.findAll();
+    const token = users[0].activationToken;
+
+    await request(app)
+      .post("api/1.0/users/token/" + token)
+      .send();
+    users = await User.findAll();
+    expect(users[0].inactive).toBe(false);
   });
 });

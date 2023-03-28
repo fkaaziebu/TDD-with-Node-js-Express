@@ -6,6 +6,8 @@ const SMTPServer = require("smtp-server").SMTPServer;
 
 let lastMail, server;
 let simulateSmtpFailure = false;
+
+/* BEFORE ANY TEST IS RUNNED */
 beforeAll(async () => {
   server = new SMTPServer({
     authOptional: true,
@@ -30,6 +32,7 @@ beforeAll(async () => {
   await sequelize.sync();
 });
 
+/* BEFORE EACH TEST IS RUNNED */
 beforeEach(() => {
   simulateSmtpFailure = false;
   return User.destroy({ truncate: true });
@@ -53,6 +56,7 @@ const postUser = (user = validUser, options = {}) => {
   return agent.send(user);
 };
 
+/* USER REGISTRATION */
 describe("User Registration", () => {
   it("returns 200 OK when signup request is valid", async () => {
     const response = await postUser();

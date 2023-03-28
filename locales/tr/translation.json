@@ -8,5 +8,8 @@
   "password_pattern": "Şifre en az 1 küçük harf ve 1 rakamdan oluşmalıdır.",
   "email_inuse": "E-posta kullanımda",
   "user_create_success": "Kullanıcı oluşturuldu",
-  "email_failure": "E-posta Hatası"
+  "email_failure": "E-posta Hatası",
+  "account_activation_failure": "Bu hesap ya aktif ya da jeton geçersiz",
+  "account_activation_success": "Hesap etkinleştirildi",
+  "validation_failure": "Girilen değerler uygun değil"
 }

@@ -112,3 +112,71 @@ describe("Listing Users", () => {
     expect(response.body.page).toBe(0);
   });
 });
+
+/* GETTING SPECIFIC USER */
+describe("Get User", () => {
+  const getUser = (id = 5) => {
+    return request(app).get(`/api/1.0/users/${id}`);
+  };
+  it("returns 404 when user not found", async () => {
+    const response = await getUser();
+    expect(response.status).toBe(404);
+  });
+
+  it.each`
+    language | message
+    ${"tr"}  | ${"Kullanıcı bulunamadı"}
+    ${"en"}  | ${"User not found"}
+  `(
+    " returns $message for unknown user when language is set to $language",
+    async ({ language, message }) => {
+      const response = await getUser().set("Accept-language", language);
+      expect(response.body.message).toBe(message);
+    }
+  );
+
+  it("returns proper error body when user not found", async () => {
+    const nowInMillis = new Date().getTime();
+    const response = await getUser();
+    const error = response.body;
+    expect(error.path).toBe("/api/1.0/users/5");
+    expect(error.timestamp).toBeGreaterThan(nowInMillis);
+    expect(Object.keys(error)).toEqual(["path", "timestamp", "message"]);
+  });
+
+  it("returns 200 ok when an active user exist", async () => {
+    const user = await User.create({
+      username: "user1",
+      email: "user1@mail.com",
+      password: "P4ssword",
+      inactive: false,
+    });
+
+    const response = await getUser(user.id);
+    expect(response.status).toBe(200);
+  });
+
+  it("returns id, username and email in response body when an active user exist", async () => {
+    const user = await User.create({
+      username: "user1",
+      email: "user1@mail.com",
+      password: "P4ssword",
+      inactive: false,
+    });
+
+    const response = await getUser(user.id);
+    expect(Object.keys(response.body)).toEqual(["id", "username", "email"]);
+  });
+
+  it("returns 404 when the user is inactive", async () => {
+    const user = await User.create({
+      username: "user1",
+      email: "user1@mail.com",
+      password: "P4ssword",
+      inactive: true,
+    });
+
+    const response = await getUser(user.id);
+    expect(response.status).toBe(404);
+  });
+});

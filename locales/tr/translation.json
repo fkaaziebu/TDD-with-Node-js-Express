@@ -11,5 +11,6 @@
   "email_failure": "E-posta Hatası",
   "account_activation_failure": "Bu hesap ya aktif ya da jeton geçersiz",
   "account_activation_success": "Hesap etkinleştirildi",
-  "validation_failure": "Girilen değerler uygun değil"
+  "validation_failure": "Girilen değerler uygun değil",
+  "user_not_found": "Kullanıcı bulunamadı"
 }

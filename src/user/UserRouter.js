@@ -1,6 +1,6 @@
 const express = require("express");
-const UserService = require("./UserService");
 const router = express.Router();
+const UserService = require("./UserService");
 const { check, validationResult } = require("express-validator");
 const ValidationException = require("../error/ValidationException");
 const UserNotFoundException = require("./UserNotFoundException");

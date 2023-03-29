@@ -12,5 +12,7 @@
   "account_activation_failure": "Bu hesap ya aktif ya da jeton geçersiz",
   "account_activation_success": "Hesap etkinleştirildi",
   "validation_failure": "Girilen değerler uygun değil",
-  "user_not_found": "Kullanıcı bulunamadı"
+  "user_not_found": "Kullanıcı bulunamadı",
+  "authentication_failure": "Kullanıcı bilgileri hatalı",
+  "inactive_authentication_failure": "Hesabınız aktif değil"
 }

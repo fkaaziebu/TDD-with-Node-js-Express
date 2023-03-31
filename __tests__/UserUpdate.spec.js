@@ -116,4 +116,8 @@ describe("User Update", () => {
     const inDBUser = await User.findOne({ where: { id: savedUser.id } });
     expect(inDBUser.username).toBe(validUpdate.username);
   });
+
+  it("", async () => {
+    
+  })
 });

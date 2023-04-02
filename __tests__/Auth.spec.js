@@ -169,3 +169,11 @@ describe("Authentication", () => {
     expect(response.body.token).not.toBeUndefined();
   });
 });
+
+/* LOGOUT */
+describe("Logout", () => {
+  it("returns 200 ok when unauthorized requst send for logout", async () => {
+    const response = await request(app).post("/api/1.0/logout").send();
+    expect(response.status).toBe(200);
+  });
+});

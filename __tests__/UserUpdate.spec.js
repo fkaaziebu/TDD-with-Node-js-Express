@@ -13,7 +13,7 @@ beforeAll(async () => {
 
 /* BEFORE EACH TEST IS RUNNED */
 beforeEach(async () => {
-  await User.destroy({ truncate: true });
+  await User.destroy({ truncate: { cascade: true } });
 });
 
 const activeUser = {

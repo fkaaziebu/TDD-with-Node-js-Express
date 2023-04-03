@@ -7,6 +7,7 @@ const EmailException = require("../email/EmailException");
 const InvalidTokenException = require("./InvalidTokenException");
 const UserNotFoundException = require("./UserNotFoundException");
 const { randomString } = require("../shared/generator");
+const TokenService = require("../auth/TokenService");
 
 const save = async (body) => {
   const { username, email, password } = body;
@@ -81,4 +82,17 @@ const updateUser = async (id, updatedBody) => {
   await user.save();
 };
 
-module.exports = { save, findByEmail, activate, getUsers, getUser, updateUser };
+const deleteUser = async (id) => {
+  await User.destroy({ where: { id: id } });
+  await TokenService.deleteTokensOfUser(id);
+};
+
+module.exports = {
+  save,
+  findByEmail,
+  activate,
+  getUsers,
+  getUser,
+  updateUser,
+  deleteUser,
+};

@@ -98,4 +98,20 @@ router.put(
   }
 );
 
+router.delete(
+  "/api/1.0/users/:id",
+  tokenAuthentication,
+  async (req, res, next) => {
+    const authenticatedUser = req.authenticatedUser;
+
+    // eslint-disable-next-line eqeqeq
+    if (!authenticatedUser || authenticatedUser.id != req.params.id) {
+      return next(new ForbiddenException("unauthorized_user_delete"));
+    }
+
+    await UserService.deleteUser(req.params.id);
+    res.send();
+  }
+);
+
 module.exports = router;

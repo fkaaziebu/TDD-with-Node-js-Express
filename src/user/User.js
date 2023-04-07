@@ -31,6 +31,7 @@ User.init(
   }
 );
 
-// User.hasMany(Token, { onDelete: "cascade", foreignKey: "userId" });
+User.hasMany(Token, { onDelete: "cascade", foreignKey: "userId" });
+// Token.belongsTo(User, { foreignKey: "userId" });
 
 module.exports = User;

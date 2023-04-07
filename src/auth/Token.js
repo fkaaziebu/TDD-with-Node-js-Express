@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../config/database");
+const User = require("../user/User");
 
 const Model = Sequelize.Model;
 
@@ -10,13 +11,14 @@ Token.init(
     token: {
       type: Sequelize.STRING,
     },
-    userId: {
-      type: Sequelize.INTEGER,
+    lastUsedAt: {
+      type: Sequelize.DATE,
     },
   },
   {
     sequelize,
     modelName: "token",
+    timestamps: false,
   }
 );
 

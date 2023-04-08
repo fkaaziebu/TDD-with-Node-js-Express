@@ -5,7 +5,7 @@ const Sequelize = require("sequelize");
 const sequelize = require("../config/database");
 const EmailException = require("../email/EmailException");
 const InvalidTokenException = require("./InvalidTokenException");
-const UserNotFoundException = require("./UserNotFoundException");
+const NotFoundException = require("../error/NotFoundException");
 const { randomString } = require("../shared/generator");
 
 const save = async (body) => {
@@ -70,7 +70,7 @@ const getUser = async (id) => {
   });
 
   if (!user) {
-    throw new UserNotFoundException();
+    throw new NotFoundException("user_not_found");
   }
   return user;
 };

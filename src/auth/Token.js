@@ -1,6 +1,5 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../config/database");
-const User = require("../user/User");
 
 const Model = Sequelize.Model;
 
@@ -8,6 +7,9 @@ class Token extends Model {}
 
 Token.init(
   {
+    userId: {
+      type: Sequelize.STRING,
+    },
     token: {
       type: Sequelize.STRING,
     },

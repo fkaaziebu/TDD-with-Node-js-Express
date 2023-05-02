@@ -14,7 +14,7 @@ describe("Scheduled Token Cleanup", () => {
   it("clears the expired token with scheduled task", async () => {
     jest.useFakeTimers();
     const token = "test-token";
-    const eightDaysAgo = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000 - 1000);
+    const eightDaysAgo = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000);
     await Token.create({
       token: token,
       lastUsedAt: eightDaysAgo,

@@ -81,7 +81,7 @@ describe("User Delete", () => {
       username: "user2",
       email: "user2@mail.com",
     });
-    const token = auth({
+    const token = await auth({
       auth: { email: "user1@mail.com", password: "P4ssword" },
     });
     const response = await deleteUser(userToBeDeleted.id, { token: token });

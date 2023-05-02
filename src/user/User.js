@@ -24,6 +24,9 @@ User.init(
     activationToken: {
       type: Sequelize.STRING,
     },
+    image: {
+      type: Sequelize.STRING,
+    },
   },
   {
     sequelize,
@@ -31,7 +34,6 @@ User.init(
   }
 );
 
-User.hasMany(Token, { foreignKey: "userId", onDelete: "cascade" });
-Token.belongsTo(User);
+User.hasMany(Token, { onDelete: "cascade", foreignKey: "userId" });
 
 module.exports = User;

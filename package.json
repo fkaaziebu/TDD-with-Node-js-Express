@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test jest --watch",
+    "posttest": "cross-env NODE_ENV=test node test-cleanup",
     "start": "cross-env NODE_ENV=development nodemon index",
     "lint": "eslint ."
   },

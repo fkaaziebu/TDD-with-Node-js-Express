@@ -1,0 +1,19 @@
+module.exports = {
+  database: {
+    database: "hoaxify",
+    username: "my-db-user",
+    password: "db-p4ss",
+    dialect: "sqlite",
+    storage: ":memory:",
+    logging: false,
+  },
+  mail: {
+    host: "localhost",
+    port: 8587,
+    tls: {
+      rejectUnauthorized: false,
+    },
+  },
+  uploadDir: "uploads-test",
+  profileDir: "profile",
+};

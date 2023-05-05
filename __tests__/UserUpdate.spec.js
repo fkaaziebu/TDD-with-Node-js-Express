@@ -7,6 +7,10 @@ const en = require("../locales/en/translation.json");
 const tr = require("../locales/tr/translation.json");
 const fs = require("fs");
 const path = require("path");
+const config = require("config");
+
+const { uploadDir, profileDir } = config;
+const profileDirectory = path.join(".", uploadDir, profileDir);
 
 /* BEFORE ANY TEST IS RUNNED */
 beforeAll(async () => {
@@ -51,6 +55,11 @@ const putUser = async (id = 5, body = null, options = {}) => {
   }
 
   return agent.send(body);
+};
+
+const readFileAsBase64 = () => {
+  const filePath = path.join(".", "__tests__", "resources", "test-png.png");
+  return fs.readFileSync(filePath, { encoding: "base64" });
 };
 
 describe("User Update", () => {
@@ -135,8 +144,7 @@ describe("User Update", () => {
     expect(response.status).toBe(403);
   });
   it("saves the user image when update contains image as base64", async () => {
-    const filePath = path.join(".", "__tests__", "resources", "test-png.png");
-    const fileInBase64 = fs.readFileSync(filePath, { encoding: "base64" });
+    const fileInBase64 = readFileAsBase64();
     const savedUser = await addUser();
     const validUpdate = { username: "user1-updated", image: fileInBase64 };
     await putUser(savedUser.id, validUpdate, {
@@ -146,8 +154,7 @@ describe("User Update", () => {
     expect(inDBUser.image).toBeTruthy();
   });
   it("returns success body having only id, username, email and image", async () => {
-    const filePath = path.join(".", "__tests__", "resources", "test-png.png");
-    const fileInBase64 = fs.readFileSync(filePath, { encoding: "base64" });
+    const fileInBase64 = readFileAsBase64();
     const savedUser = await addUser();
     const validUpdate = { username: "user1-updated", image: fileInBase64 };
     const response = await putUser(savedUser.id, validUpdate, {
@@ -160,4 +167,54 @@ describe("User Update", () => {
       "image",
     ]);
   });
+  it("saves the user image to upload folder and stores filename in user when update has image", async () => {
+    const fileInBase64 = readFileAsBase64();
+    const savedUser = await addUser();
+    const validUpdate = { username: "user1-updated", image: fileInBase64 };
+    await putUser(savedUser.id, validUpdate, {
+      auth: { email: savedUser.email, password: "P4ssword" },
+    });
+    const inDBUser = await User.findOne({ where: { id: savedUser.id } });
+    const profileImagePath = path.join(profileDirectory, inDBUser.image);
+    expect(fs.existsSync(profileImagePath)).toBe(true);
+  });
+  it("removes the old image after user uploads new one", async () => {
+    const fileInBase64 = readFileAsBase64();
+    const savedUser = await addUser();
+    const validUpdate = { username: "user1-updated", image: fileInBase64 };
+    const response = await putUser(savedUser.id, validUpdate, {
+      auth: { email: savedUser.email, password: "P4ssword" },
+    });
+
+    const firstImage = response.body.image;
+
+    await putUser(savedUser.id, validUpdate, {
+      auth: { email: savedUser.email, password: "P4ssword" },
+    });
+
+    const profileImagePath = path.join(profileDirectory, firstImage);
+    expect(fs.existsSync(profileImagePath)).toBe(false);
+  });
+
+  it.each`
+    language | value             | message
+    ${"en"}  | ${null}           | ${en.username_null}
+    ${"en"}  | ${"usr"}          | ${en.username_size}
+    ${"en"}  | ${"a".repeat(33)} | ${en.username_size}
+    ${"tr"}  | ${null}           | ${tr.username_null}
+    ${"tr"}  | ${"usr"}          | ${tr.username_size}
+    ${"tr"}  | ${"a".repeat(33)} | ${tr.username_size}
+  `(
+    "returns bad request with $message when username is updated with this $value when langauge is set as $language",
+    async ({ language, value, message }) => {
+      const savedUser = await addUser();
+      const invalidUpdate = { username: value };
+      const response = await putUser(savedUser.id, invalidUpdate, {
+        auth: { email: savedUser.email, password: "P4ssword" },
+        language: language,
+      });
+      expect(response.status).toBe(400);
+      expect(response.body.validationErrors.username).toBe(message);
+    }
+  );
 });

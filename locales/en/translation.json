@@ -17,5 +17,7 @@
   "inactive_authentication_failure": "Account is inactive",
   "unauthorized_user_update": "You are not authorized to update user",
   "unauthorized_user_delete": "You are not authorized to delete user",
-  "email_not_inuse": "E-mail not found"
+  "email_not_inuse": "E-mail not found",
+  "profile_image_size": "Your profile image cannot be bigger than 2MB",
+  "unsupported_image_file": "Only JPEG or PNG files are allowed"
 }

@@ -9,7 +9,9 @@ const tr = require("../locales/tr/translation.json");
 
 /* BEFORE ANY TEST IS RUNNED */
 beforeAll(async () => {
-  await sequelize.sync();
+  if (process.env.NODE_ENV === "test") {
+    await sequelize.sync();
+  }
 });
 
 /* BEFORE EACH TEST IS RUNNED */

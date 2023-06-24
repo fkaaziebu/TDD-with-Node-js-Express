@@ -4,10 +4,15 @@
   "description": "tdd with express",
   "main": "app.js",
   "scripts": {
+    "start": "cross-env NODE_ENV=development nodemon index",
     "test": "cross-env NODE_ENV=test jest --watch",
     "posttest": "cross-env NODE_ENV=test node test-cleanup",
-    "start": "cross-env NODE_ENV=development nodemon index",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test:staging": "cross-env NODE_ENV=staging jest -f . --runInBand --forceExit",
+    "migrate:test": "cross-env NODE_ENV=staging sequelize-cli db:migrate",
+    "addusers:start": "cross-env NODE_ENV=staging sequelize-cli db:seed:all",
+    "pretest:staging": "npm run migrate:test",
+    "prestart": "npm run addusers:start"
   },
   "author": "Frederick Aziebu",
   "license": "ISC",
@@ -16,11 +21,15 @@
     "config": "^3.3.9",
     "express": "^4.18.2",
     "express-validator": "^6.15.0",
+    "file-type": "^16.5.4",
     "i18next": "^22.4.13",
     "i18next-fs-backend": "^2.1.1",
     "i18next-http-middleware": "^3.3.0",
     "nodemailer": "^6.9.1",
+    "pg": "^8.11.0",
+    "pg-hstore": "^2.3.4",
     "sequelize": "^6.29.3",
+    "sequelize-cli": "^6.6.1",
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {

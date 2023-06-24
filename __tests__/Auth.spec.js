@@ -9,7 +9,9 @@ const tr = require("../locales/tr/translation.json");
 
 /* BEFORE ANY TEST IS RUNNED */
 beforeAll(async () => {
-  await sequelize.sync();
+  if (process.env.NODE_ENV === "test") {
+    await sequelize.sync();
+  }
 });
 
 /* BEFORE EACH TEST IS RUNNED */
@@ -187,7 +189,7 @@ describe("Authentication", () => {
 
 /* LOGOUT */
 describe("Logout", () => {
-  it("returns 200 ok when unauthorized requst send for logout", async () => {
+  it("returns 200 ok when unauthorized request sent for logout", async () => {
     const response = await postLogout();
     expect(response.status).toBe(200);
   });

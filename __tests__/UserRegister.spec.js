@@ -31,7 +31,9 @@ beforeAll(async () => {
   });
   await server.listen(8587, "localhost");
 
-  await sequelize.sync();
+  if (process.env.NODE_ENV === "test") {
+    await sequelize.sync();
+  }
   jest.setTimeout(20000);
 });
 

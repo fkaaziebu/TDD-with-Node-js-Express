@@ -17,6 +17,8 @@
   "inactive_authentication_failure": "Hesabınız aktif değil",
   "unauthorized_user_update": "Kullanıcıyı güncelleme yetkiniz yok",
   "unauthorized_user_delete": "Kullanıcıyı silme yetkiniz yok",
-  "email_not_inuse": "E-posta bulunamdı"
+  "email_not_inuse": "E-posta bulunamdı",
+  "profile_image_size": "Kullandığız resim 2MB'dan büyük olamaz",
+  "unsupported_image_file": "Sadece JPEG ya da PNG dosyalarını kullanabilirsiniz"
 
 }
